@@ -8,6 +8,7 @@
 #include "setup.h"
 #include "uart/uart_tx.h"
 #include "i2c/twi_master.h"
+#include "i2c/lcd/lcd.h"
 #include "i2c/lcd/lcd_blue.h"
 
 volatile int counter = 0;
@@ -61,6 +62,9 @@ int16_t gx = 0, gy = 0, gz = 0;	// Dados do giroscopio
 int16_t ax = 0, ay = 0, az = 0; // Dados do acelerometro
 
 
+// LCD
+uint8_t lcdEnabled = 0;
+
 /*
  * main.c
  */
@@ -78,45 +82,54 @@ int main(void) {
     magEnabled = 0;
     barEnabled = 0;
     mpuEnabled = 0;
+    lcdEnabled = 0;
+
 
 
     while (1) {
 
     	uint8_t enable = lcd_blue_detect();
-    	uart_printf("Resultado: %i\r\n", enable);
-    	uart_printf("Resultado: %c\r\n", enable);
+    	//uart_printf("Resultado: %i\r\n", enable);
+    	//uart_printf("Resultado: %c\r\n", enable);
 
+    	if (enable) {
+    		uart_printf("LCD Habilitado\r\n");
+    		if (lcdEnabled == 0) {
+    			uart_printf("Configurando LCD...\r\n");
+    			lcd_blue_config();
 
-		/*if (enable) {
-			uart_printf("MPU6050 Habilitado\r\n");
-			if (mpuEnabled == 0) {
-				uart_printf("Configurando...\r\n");
-				mpu6050_config();
-				mpuEnabled = 1;
-			}
+    			lcd_clear();
+    			/*lcd_setCursor(0,0);
+    			delay(1000);
+    			lcd_noBacklight();
+    			delay(1000);
+    			lcd_backlight();*/
 
-			//mpu6050_getMeasurements(&ax,&ay,&az,&mpuTemp,&gx,&gy,&gz);
-			mpu6050_getTemperature(&mpuTemp);
-			mpuTempDegrees = mpuEnabled/340 + 36.53;
-			uart_printf("temp = %.1f C\r\n", mpuTempDegrees);
+    			//uint8_t c = 'a';
+    			//lcd_write(c);
+    			lcd_print("Configurado!  ");
+    			//delay(1000);
+    			lcd_setCursor(0,2);
+    			lcd_print("Test OK!      ");
+    			lcd_setCursor(0,0);
 
-			mpu6050_getAcceleration(&ax, &ay, &az);
-			uart_printf("ax = %i; ay = %i, az = %i\r\n", ax, ay, az);
+    			lcdEnabled = 1;
+    		}
 
-			mpu6050_getRotation(&gx,&gy,&gz);
-			uart_printf("gx = %i; gy = %i, gz = %i\r\n", gx, gy, gz);
-		}
-		else {
-			uart_printf("MPU6050 Desabilitado\r\n");
-			if (mpuEnabled)
-				mpuEnabled = 0;
-		}*/
+    	}
+    	else {
+    		uart_printf("LCD Desabilitado\r\n");
+    		if (lcdEnabled)
+    			lcdEnabled = 0;
+    	}
 
 
 
     	delay(500);
 
     	counter++;
+
+    	__bis_SR_register(LPM0_bits + GIE);       // Entra no modo de baixo consumo com as interrupções habilitadas
 
     }
 

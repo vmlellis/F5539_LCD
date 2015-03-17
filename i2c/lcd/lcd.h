@@ -11,6 +11,7 @@
 #define I2C_LCD_LCD_H_
 
 #include <inttypes.h>
+#include <stdio.h> // for size_t
 
 // LCD Commands
 // ---------------------------------------------------------------------------
@@ -98,7 +99,6 @@
 
 // Attach functions
 void lcd_attachSendFunction(void (*function)(uint8_t, uint8_t));
-void lcd_attachWriteFunction(void (*function)(uint8_t));
 void lcd_attachSetBacklightFunction(void (*function)(uint8_t));
 
 /*!
@@ -350,6 +350,8 @@ void lcd_on(void);
  */
 void lcd_off(void);
 
+void lcd_print(char*);
+
 
 /*!
  @function
@@ -364,5 +366,18 @@ void lcd_off(void);
  FOUR_BITS).
  */
 void lcd_command(uint8_t value);
+
+/*!
+ @function
+ @abstract   Writes to the LCD.
+ @discussion This method writes character to the LCD in the current cursor
+ position.
+
+ This is the virtual write method, implemented in the Print class, therefore
+ all Print class methods will end up calling this method.
+
+ @param      value[in] Value to write to the LCD.
+ */
+void lcd_write(uint8_t value);
 
 #endif /* I2C_LCD_LCD_H_ */

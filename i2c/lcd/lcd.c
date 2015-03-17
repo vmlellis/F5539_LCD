@@ -22,15 +22,10 @@ uint8_t lcd_polarity;   	         // Backlight polarity
 
 
 static void (*lcd_send)(uint8_t value, uint8_t mode);
-static void (*lcd_write)(uint8_t value);
 static void (*lcd_setBacklight)(uint8_t value);
 
 void lcd_attachSendFunction(void (*function)(uint8_t, uint8_t)) {
 	lcd_send = function;
-}
-
-void lcd_attachWriteFunction(void (*function)(uint8_t)) {
-	lcd_write = function;
 }
 
 void lcd_attachSetBacklightFunction(void (*function)(uint8_t)) {
@@ -109,7 +104,7 @@ void lcd_init(uint8_t cols, uint8_t lines, uint8_t dotsize)  {
 	// clear the LCD
 	lcd_clear();
 
-	// Initialize to default text direction (for romance languages)
+	// Initialize to default text direction (for roman languages)
 	lcd_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
@@ -280,9 +275,25 @@ void lcd_off ( void )
    lcd_noDisplay();
 }
 
+void lcd_print(char *s)
+{
+	char c;
+
+  	// Loops through each character in string 's'
+	while ((c = *s++)) {
+	  lcd_write(c);
+	}
+}
+
 // General LCD commands - generic methods used by the rest of the commands
 // ---------------------------------------------------------------------------
 void lcd_command(uint8_t value)
 {
    lcd_send(value, COMMAND);
+}
+
+
+void lcd_write(uint8_t value)
+{
+   lcd_send(value, DATA);
 }

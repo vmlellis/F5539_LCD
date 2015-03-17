@@ -109,7 +109,6 @@ void lcd_blue_config(void) {
 	lcd_blue_write(0); // Set the entire port to LOW
 
 	lcd_attachSendFunction(lcd_blue_send);
-	lcd_attachWriteFunction(lcd_blue_write);
 	lcd_attachSetBacklightFunction(lcd_blue_setBacklight);
 
 	lcd_init(COLS, ROWS, 0);
